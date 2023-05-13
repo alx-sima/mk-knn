@@ -5,3 +5,10 @@
 /check
 /data.json
 
+# build artifacts
+kNN
+mk
+*.o
+
+# others
+.gdb_history
