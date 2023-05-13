@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-size_t read_line(char **str, size_t *size)
+size_t read_line(char **str, size_t *size, FILE *stream)
 {
 	char buffer[BUFSIZ];
 
 	size_t line_len = 0;
-	while (fgets(buffer, BUFSIZ, stdin)) {
+	while (fgets(buffer, BUFSIZ, stream)) {
 		size_t buffer_siz = strlen(buffer) + 1;
 
 		/* `str` se realoca doar cand se citeste un
@@ -32,19 +32,45 @@ size_t read_line(char **str, size_t *size)
 	return 0;
 }
 
+void load_file(char *filename)
+{
+	FILE *stream = fopen(filename, "r");
+	if (!stream) {
+		fprintf(stderr, "Error: Unable to open file %s.\n", filename);
+		exit(EXIT_FAILURE);
+	}
+
+	char *read_buffer = NULL;
+	size_t buf_len = 0;
+
+	while (read_line(&read_buffer, &buf_len, stream)) {
+		char *word = strtok(read_buffer, " ");
+		while (word) {
+			/* TODO: adauga cuvantul in dictionar */
+			puts(word);
+
+			word = strtok(NULL, " ");
+		}
+	}
+
+	printf("File %s succesfully loaded\n", filename);
+	fclose(stream);
+	free(read_buffer);
+}
+
 int main(void)
 {
 	char *line = NULL;
 	size_t line_size = 0;
 
-	while (read_line(&line, &line_size)) {
+	while (read_line(&line, &line_size, stdin)) {
 		char *cmd = strtok(line, " ");
 		char *args = strtok(NULL, "");
 
 		if (strcmp(cmd, "INSERT") == 0) {
 
 		} else if (strcmp(cmd, "LOAD") == 0) {
-			puts("File succesfully loaded");
+			load_file(args);
 		}
 	}
 
