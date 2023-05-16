@@ -1,3 +1,4 @@
+# Copyright 2023 Alexandru Sima (312CA)
 # compiler setup
 CC=gcc
 CFLAGS=-Wall -Wextra -Wshadow -Wpedantic -std=c99 -O0 -g
@@ -5,12 +6,9 @@ CFLAGS=-Wall -Wextra -Wshadow -Wpedantic -std=c99 -O0 -g
 # define targets
 TARGETS=kNN mk
 
-#define object-files
-OBJ=mk.o kNN.o
-
 build: $(TARGETS)
 
-mk: mk.o
+mk: mk.o trie.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 kNN: kNN.o
@@ -20,9 +18,9 @@ kNN: kNN.o
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 pack:
-	zip -FSr 311CA_MarcelPetrescu_Tema3.zip README.md Makefile *.c *.h
+	zip -FSr 312CA_AlexandruSima_Tema3.zip README.md Makefile *.c *.h
 
 clean:
-	rm -f $(TARGETS) $(OBJ)
+	rm -f $(TARGETS) *.o vgcore.*
 
 .PHONY: pack clean
