@@ -5,13 +5,13 @@
 
 #include "trie.h"
 
-struct trie_node *node_create(size_t alphabet_size)
+struct node *node_create(size_t alphabet_size)
 {
-	struct trie_node *n = malloc(sizeof(struct trie_node));
+	struct node *n = malloc(sizeof(struct node));
 	if (!n)
 		return NULL;
 
-	n->children = calloc(alphabet_size, sizeof(struct trie_node *));
+	n->children = calloc(alphabet_size, sizeof(struct node *));
 	if (!n->children) {
 		free(n);
 		return NULL;
@@ -28,7 +28,7 @@ struct trie *trie_create(size_t alphabet_size)
 	if (!t)
 		return NULL;
 
-	t->roots = calloc(alphabet_size, sizeof(struct trie_node *));
+	t->roots = calloc(alphabet_size, sizeof(struct node *));
 	if (!t->roots) {
 		free(t);
 		return NULL;
@@ -38,11 +38,11 @@ struct trie *trie_create(size_t alphabet_size)
 	return t;
 }
 
-void trie_node_destroy(struct trie_node *n, size_t alphabet_size)
+void node_destroy(struct node *n, size_t alphabet_size)
 {
 	for (size_t i = 0; i < alphabet_size; ++i) {
 		if (n->children[i])
-			trie_node_destroy(n->children[i], alphabet_size);
+			node_destroy(n->children[i], alphabet_size);
 	}
 
 	free(n->children);
@@ -53,59 +53,59 @@ void trie_destroy(struct trie *t)
 {
 	for (size_t i = 0; i < t->alphabet_size; ++i) {
 		if (t->roots[i])
-			trie_node_destroy(t->roots[i], t->alphabet_size);
+			node_destroy(t->roots[i], t->alphabet_size);
 	}
 
 	free(t->roots);
 	free(t);
 }
 
-void trie_node_insert(struct trie_node *t, char *key)
+void node_insert(struct node *t, char *word)
 {
-	if (*key == '\0') {
+	if (*word == '\0') {
 		++t->words;
 		return;
 	}
-	size_t char_index = *key - 'a';
+	size_t char_index = *word - 'a';
 	if (t->children[char_index] == NULL) {
 		++t->children_no;
 		t->children[char_index] = node_create(26);
 	}
 	// TODO programare defensiva
-	trie_node_insert(t->children[char_index], key + 1);
+	node_insert(t->children[char_index], word + 1);
 }
 
-void trie_insert(struct trie *t, char *key)
+void trie_insert(struct trie *t, char *word)
 {
-	char current_char = *key;
+	char current_char = *word;
 	size_t index = current_char - 'a';
 
 	if (!t->roots[index]) {
 		t->roots[index] = node_create(26);
 	}
-	trie_node_insert(t->roots[index], key + 1);
+	node_insert(t->roots[index], word + 1);
 }
 
-int trie_node_remove(struct trie_node **n, char *key)
+int node_remove(struct node **n, char *word)
 {
-	if (*key == '\0') {
+	if (*word == '\0') {
 		(*n)->words = 0;
 		if (!(*n)->children_no) {
-			trie_node_destroy(*n, 26);
+			node_destroy(*n, 26);
 			*n = NULL;
 		}
 		return 0;
 	}
 
-	size_t index = *key - 'a';
+	size_t index = *word - 'a';
 	if (!(*n)->children[index])
 		return 1;
 
-	int removal_status = trie_node_remove(&(*n)->children[index], key + 1);
+	int removal_status = node_remove(&(*n)->children[index], word + 1);
 	if (!(*n)->children[index]) {
 		--(*n)->children_no;
 		if (!(*n)->children_no && !(*n)->words) {
-			trie_node_destroy(*n, 26);
+			node_destroy(*n, 26);
 			*n = NULL;
 		}
 	}
@@ -113,16 +113,16 @@ int trie_node_remove(struct trie_node **n, char *key)
 	return removal_status;
 }
 
-int trie_remove(struct trie *t, char *key)
+int trie_remove(struct trie *t, char *word)
 {
-	size_t index = *key - 'a';
+	size_t index = *word - 'a';
 	if (!t->roots[index])
 		return 1; // TODO 1 = err code
 
-	return trie_node_remove(&t->roots[index], key + 1);
+	return node_remove(&t->roots[index], word + 1);
 }
 
-void trie_node_print_all(struct trie_node *t)
+void node_print_all(struct node *t)
 {
 	if (t->words) {
 		printf(": %d\n", t->words);
@@ -130,7 +130,7 @@ void trie_node_print_all(struct trie_node *t)
 	for (size_t i = 0; i < 26; ++i) {
 		if (t->children[i] != NULL) {
 			printf("%c", (char)i + 'a');
-			trie_node_print_all(t->children[i]);
+			node_print_all(t->children[i]);
 		}
 	}
 }
@@ -140,7 +140,7 @@ void trie_print_all(struct trie *t)
 	for (size_t i = 0; i < t->alphabet_size; ++i) {
 		if (t->roots[i] != NULL) {
 			printf("%c", (char)i + 'a');
-			trie_node_print_all(t->roots[i]);
+			node_print_all(t->roots[i]);
 		}
 	}
 }

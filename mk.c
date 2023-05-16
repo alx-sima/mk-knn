@@ -1,4 +1,5 @@
-/* Copyright 2023 Sima Alexandru (312CA) */
+/* Copyright 2023 Alexandru Sima (312CA) */
+#include "trie.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,6 +63,11 @@ int main(void)
 {
 	char *line = NULL;
 	size_t line_size = 0;
+	struct trie *dict = trie_create('Z' - 'A' + 1);
+	if (!dict) {
+		fputs("Error: Unable to create trie.", stderr);
+		exit(EXIT_FAILURE);
+	}
 
 	while (read_line(&line, &line_size, stdin)) {
 		char *cmd = strtok(line, " ");
