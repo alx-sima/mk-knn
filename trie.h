@@ -10,13 +10,17 @@
 struct node {
 	/** Fiii nodului */
 	struct node **children;
+
 	/** Numarul de cuvinte care incep cu
-	 * acest prefix (= numarul de fii) */
+	 * acest prefix (numarul de fii) */
 	size_t children_no;
 
 	/** Numarul de cuvinte memorate care se termina
 	 * in stringul format pana in acest nod */
-	int words;
+	size_t words;
+
+	size_t min_word_len;
+	size_t max_freq;
 };
 
 /**
@@ -27,7 +31,7 @@ struct node {
 struct trie {
 	/** `alphabet_size` noduri care reprezinta cate
 	 * un arbore pentru fiecare litera a alfabetului */
-	struct node **roots;
+	struct node *root;
 	/** Numarul maxim de fii al unui nod */
 	size_t alphabet_size;
 };
@@ -71,6 +75,12 @@ int trie_remove(struct trie *t, char *word);
  * @param word	cuvantul de inserat
  */
 void trie_insert(struct trie *t, char *word);
+
+struct node *trie_get_prefix(struct trie *t, char *prefix);
+
+void get_first_word(struct node *n, char *resultstr);
+int get_shortest_word(struct node *n, char *resultstr, size_t pos);
+void get_most_frequent_word(struct node *n, char *resultstr, size_t pos);
 
 /**
  * @relates trie

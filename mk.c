@@ -1,9 +1,10 @@
 /* Copyright 2023 Alexandru Sima (312CA) */
-#include "trie.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "trie.h"
 
 size_t read_line(char **str, size_t *size, FILE *stream)
 {
@@ -26,14 +27,13 @@ size_t read_line(char **str, size_t *size, FILE *stream)
 		strncpy(*str + line_len, buffer, buffer_siz);
 		line_len += buffer_siz - 1;
 		if ((*str)[line_len - 1] == '\n') {
-			(*str)[line_len - 1] = '\0';
-			return line_len - 1;
+			return line_len;
 		}
 	}
 	return 0;
 }
 
-void load_file(char *filename)
+void load_file(struct trie *dict, char *filename)
 {
 	FILE *stream = fopen(filename, "r");
 	if (!stream) {
@@ -45,12 +45,13 @@ void load_file(char *filename)
 	size_t buf_len = 0;
 
 	while (read_line(&read_buffer, &buf_len, stream)) {
-		char *word = strtok(read_buffer, " ");
+		char *word = strtok(read_buffer, " \n");
 		while (word) {
 			/* TODO: adauga cuvantul in dictionar */
+			// puts(word);
+			trie_insert(dict, word);
 			puts(word);
-
-			word = strtok(NULL, " ");
+			word = strtok(NULL, " \n");
 		}
 	}
 
@@ -59,10 +60,42 @@ void load_file(char *filename)
 	free(read_buffer);
 }
 
+void autocomplete(struct trie *dict, char *prefix, int type)
+{
+	printf("%s", prefix);
+	char resultstr[100]; // TODO
+
+	struct node *start = trie_get_prefix(dict, prefix);
+	if (!start) {
+		// fputs("Error: Invalid prefix.", stderr);
+	}
+
+	switch (type) {
+	case 0:
+		get_first_word(start, resultstr);
+		break;
+	case 1:
+		get_first_word(start, resultstr);
+		printf("%s\n", resultstr);
+		break;
+	case 2:
+		if (!get_shortest_word(start, resultstr, 0))
+			printf("%s\n", resultstr);
+		break;
+	case 3:
+		get_most_frequent_word(start, resultstr, 0);
+		break;
+	default:
+		// fputs("Error: Invalid command.", stderr)
+		;
+	}
+}
+
 int main(void)
 {
 	char *line = NULL;
 	size_t line_size = 0;
+
 	struct trie *dict = trie_create('Z' - 'A' + 1);
 	if (!dict) {
 		fputs("Error: Unable to create trie.", stderr);
@@ -70,16 +103,35 @@ int main(void)
 	}
 
 	while (read_line(&line, &line_size, stdin)) {
-		char *cmd = strtok(line, " ");
-		char *args = strtok(NULL, "");
+		char *cmd = strtok(line, "\n ");
+		char *args = strtok(NULL, "\n");
 
 		if (strcmp(cmd, "INSERT") == 0) {
+			trie_insert(dict, args);
 
 		} else if (strcmp(cmd, "LOAD") == 0) {
-			load_file(args);
+			load_file(dict, args);
+			trie_print_all(dict);
+
+		} else if (strcmp(cmd, "REMOVE") == 0) {
+			trie_remove(dict, args);
+
+		} else if (strcmp(cmd, "AUTOCORRECT") == 0) {
+
+		} else if (strcmp(cmd, "AUTOCOMPLETE") == 0) {
+			char *prefix = strtok(args, "\n ");
+			char *type = strtok(NULL, "\n");
+			int type_no = atoi(type);
+			autocomplete(dict, prefix, type_no);
+
+		} else if (strcmp(cmd, "EXIT") == 0) {
+			break;
+		} else {
+			// fputs("Error: Invalid command.", stderr);
 		}
 	}
 
+	trie_destroy(dict);
 	free(line);
 	return 0;
 }
