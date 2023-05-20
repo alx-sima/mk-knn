@@ -1,0 +1,101 @@
+/* Copyright 2023 Alexandru Sima */
+#include <stdlib.h>
+
+#include "trie_internals.h"
+
+struct node *node_create(size_t alphabet_size)
+{
+	struct node *n = malloc(sizeof(struct node));
+	if (!n)
+		return NULL;
+
+	n->children = calloc(alphabet_size, sizeof(struct node *));
+	if (!n->children) {
+		free(n);
+		return NULL;
+	}
+
+	n->children_no = 0;
+	n->min_word_len = 0;
+	n->words = 0;
+	return n;
+}
+
+void node_destroy(struct node *n, size_t alphabet_size)
+{
+	for (size_t i = 0; i < alphabet_size; ++i) {
+		if (n->children[i])
+			node_destroy(n->children[i], alphabet_size);
+	}
+
+	free(n->children);
+	free(n);
+}
+
+void node_insert(struct node *n, char *word, size_t word_len)
+{
+	if (word_len == 0) {
+		++n->words;
+		n->max_freq = n->words; // TODO
+		return;
+	}
+
+	size_t char_index = *word - 'a';
+	if (n->children[char_index] == NULL) {
+		n->children[char_index] = node_create(26);
+		++n->children_no;
+	}
+	// TODO programare defensiva
+	node_insert(n->children[char_index], word + 1, word_len - 1);
+
+	n->min_word_len = 0xfffffff;
+	n->max_freq = n->words;
+	for (size_t i = 0; i < 26; ++i) {
+		if (!n->children[i])
+			continue;
+
+		if (n->children[i]->min_word_len < n->min_word_len)
+			n->min_word_len = n->children[i]->min_word_len + 1;
+
+		if (n->children[i]->max_freq > n->max_freq)
+			n->max_freq = n->children[i]->max_freq;
+	}
+}
+
+int node_remove(struct node **n, char *word)
+{
+	if (*word == '\0') {
+		(*n)->words = 0;
+		if (!(*n)->children_no) {
+			node_destroy(*n, 26);
+			*n = NULL;
+		}
+		return 0;
+	}
+
+	size_t index = *word - 'a';
+	if (!(*n)->children[index])
+		return 1;
+
+	int removal_status = node_remove(&(*n)->children[index], word + 1);
+	if (!(*n)->children[index]) {
+		--(*n)->children_no;
+
+		if (!(*n)->children_no && !(*n)->words) {
+			node_destroy(*n, 26);
+			*n = NULL;
+			return 0;
+		}
+
+		for (size_t i = 0; i < 26; ++i) {
+			if (!(*n)->children[i])
+				continue;
+
+			if ((*n)->children[i]->min_word_len < (*n)->min_word_len)
+				(*n)->min_word_len = (*n)->children[i]->min_word_len + 1;
+		}
+	}
+
+	// TODO
+	return removal_status;
+}

@@ -3,25 +3,7 @@
 #define TRIE_H_
 #include <stddef.h>
 
-/**
- * @class node
- * @brief Un nod dintr-un trie.
- */
-struct node {
-	/** Fiii nodului */
-	struct node **children;
-
-	/** Numarul de cuvinte care incep cu
-	 * acest prefix (numarul de fii) */
-	size_t children_no;
-
-	/** Numarul de cuvinte memorate care se termina
-	 * in stringul format pana in acest nod */
-	size_t words;
-
-	size_t min_word_len;
-	size_t max_freq;
-};
+struct node;
 
 /**
  * @class trie
@@ -78,9 +60,9 @@ void trie_insert(struct trie *t, char *word);
 
 struct node *trie_get_prefix(struct trie *t, char *prefix);
 
-void get_first_word(struct node *n, char *resultstr);
-int get_shortest_word(struct node *n, char *resultstr, size_t pos);
-void get_most_frequent_word(struct node *n, char *resultstr, size_t pos);
+//void get_first_word(struct node *n, char *resultstr);
+//int get_shortest_word(struct node *n, char *resultstr, size_t pos);
+//void get_most_frequent_word(struct node *n, char *resultstr, size_t pos);
 
 /**
  * @relates trie

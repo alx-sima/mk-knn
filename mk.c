@@ -60,30 +60,27 @@ void load_file(struct trie *dict, char *filename)
 	free(read_buffer);
 }
 
+void get_first_word();
+void get_shortest_word();
+void get_most_frequent_word();
+
 void autocomplete(struct trie *dict, char *prefix, int type)
 {
-	printf("%s", prefix);
-	char resultstr[100]; // TODO
-
 	struct node *start = trie_get_prefix(dict, prefix);
-	if (!start) {
-		// fputs("Error: Invalid prefix.", stderr);
-	}
-
 	switch (type) {
 	case 0:
-		get_first_word(start, resultstr);
+		print_autocompleted_word(start, prefix, get_first_word);
+		print_autocompleted_word(start, prefix, get_shortest_word);
+		print_autocompleted_word(start, prefix, get_most_frequent_word);
 		break;
 	case 1:
-		get_first_word(start, resultstr);
-		printf("%s\n", resultstr);
+		print_autocompleted_word(start, prefix, get_first_word);
 		break;
 	case 2:
-		if (!get_shortest_word(start, resultstr, 0))
-			printf("%s\n", resultstr);
+		print_autocompleted_word(start, prefix, get_shortest_word);
 		break;
 	case 3:
-		get_most_frequent_word(start, resultstr, 0);
+		print_autocompleted_word(start, prefix, get_most_frequent_word);
 		break;
 	default:
 		// fputs("Error: Invalid command.", stderr)
