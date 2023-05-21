@@ -1,19 +1,18 @@
 /* Copyright 2023 Alexandru Sima */
+#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "trie_internals.h"
+#include "utils.h"
 
 struct node *node_create(size_t alphabet_size)
 {
 	struct node *n = malloc(sizeof(struct node));
-	if (!n)
-		return NULL;
+	DIE(!n, "failed malloc() of node");
 
 	n->children = calloc(alphabet_size, sizeof(struct node *));
-	if (!n->children) {
-		free(n);
-		return NULL;
-	}
+	DIE(!n->children, "failed malloc() of node->children");
 
 	n->children_no = 0;
 	n->min_word_len = 0;
@@ -36,7 +35,16 @@ void node_insert(struct node *n, char *word, size_t word_len)
 {
 	if (word_len == 0) {
 		++n->words;
-		n->max_freq = n->words; // TODO
+		n->max_freq = n->words;
+
+		n->min_word_len = 0;
+		for (size_t i = 0; i < 26; ++i) {
+			if (!n->children[i])
+				continue;
+
+			if (n->children[i]->max_freq > n->max_freq)
+				n->max_freq = n->children[i]->max_freq;
+		}
 		return;
 	}
 
@@ -45,10 +53,12 @@ void node_insert(struct node *n, char *word, size_t word_len)
 		n->children[char_index] = node_create(26);
 		++n->children_no;
 	}
-	// TODO programare defensiva
+
 	node_insert(n->children[char_index], word + 1, word_len - 1);
 
 	n->min_word_len = 0xfffffff;
+	if (n->words)
+		n->min_word_len = 0;
 	n->max_freq = n->words;
 	for (size_t i = 0; i < 26; ++i) {
 		if (!n->children[i])
@@ -86,14 +96,21 @@ int node_remove(struct node **n, char *word)
 			*n = NULL;
 			return 0;
 		}
+	}
 
-		for (size_t i = 0; i < 26; ++i) {
-			if (!(*n)->children[i])
-				continue;
+	(*n)->min_word_len = 0xfffffff;
+	if ((*n)->words)
+		(*n)->min_word_len = 0;
+	(*n)->max_freq = (*n)->words;
+	for (size_t i = 0; i < 26; ++i) {
+		if (!(*n)->children[i])
+			continue;
 
-			if ((*n)->children[i]->min_word_len < (*n)->min_word_len)
-				(*n)->min_word_len = (*n)->children[i]->min_word_len + 1;
-		}
+		if ((*n)->children[i]->min_word_len < (*n)->min_word_len)
+			(*n)->min_word_len = (*n)->children[i]->min_word_len + 1;
+
+		if ((*n)->children[i]->max_freq > (*n)->max_freq)
+			(*n)->max_freq = (*n)->children[i]->max_freq;
 	}
 
 	// TODO

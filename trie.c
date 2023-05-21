@@ -6,20 +6,16 @@
 
 #include "trie.h"
 #include "trie_internals.h"
+#include "utils.h"
 
 struct trie *trie_create(size_t alphabet_size)
 {
 	struct trie *t = malloc(sizeof(struct trie));
-	if (!t)
-		return NULL;
+	DIE(!t, "failed malloc() of trie");
 
 	t->alphabet_size = alphabet_size;
 
 	t->root = node_create(alphabet_size);
-	if (!t->root) {
-		free(t);
-		return NULL;
-	}
 
 	return t;
 }
@@ -62,6 +58,7 @@ char *get_first_word(struct node *n, size_t pos)
 {
 	if (n->words) {
 		char *word = malloc(pos + 1);
+		DIE(!word, "failed malloc() of word buffer");
 		word[pos] = '\0';
 		return word;
 	}
@@ -80,6 +77,7 @@ char *get_shortest_word(struct node *n, size_t pos)
 {
 	if (n->words) {
 		char *word = malloc(pos + 1);
+		DIE(!word, "failed malloc() of word buffer");
 		word[pos] = '\0';
 		return word;
 	}
@@ -102,6 +100,8 @@ char *get_most_frequent_word(struct node *n, size_t pos)
 {
 	if (n->words == n->max_freq) {
 		char *word = malloc(pos + 1);
+		DIE(!word, "failed malloc() of word buffer");
+
 		word[pos] = '\0';
 		return word;
 	}
@@ -123,7 +123,7 @@ char *get_most_frequent_word(struct node *n, size_t pos)
 void print_first_word(struct node *n, char *prefix)
 {
 	if (!n) {
-		puts("No word found");
+		puts("No words found");
 		return;
 	}
 
@@ -136,7 +136,7 @@ void print_autocompleted_word(struct node *n, char *prefix,
 							  char *(*autocomplete_func)(struct node *, size_t))
 {
 	if (!n) {
-		puts("No word found.");
+		puts("No words found");
 		return;
 	}
 
@@ -151,7 +151,7 @@ void print_autocompleted_word(struct node *n, char *prefix,
 void print_most_frequent_word(struct node *n, char *prefix)
 {
 	if (!n) {
-		puts("No word found.");
+		puts("No words found");
 		return;
 	}
 
@@ -160,21 +160,64 @@ void print_most_frequent_word(struct node *n, char *prefix)
 	free(word);
 }
 
-// ! DEPRECATED
-void node_print_all(struct node *t)
+int node_autocorrect(struct node *n, char *buffer, size_t pos, int changes,
+					 int max_changes)
 {
-	if (t->words) {
-		printf(": %zu\n", t->words);
-	}
-	for (size_t i = 0; i < 26; ++i) {
-		if (t->children[i] != NULL) {
-			printf("%c", (char)i + 'a');
-			node_print_all(t->children[i]);
+	if (buffer[pos] == '\0') {
+		if (n->words) {
+			puts(buffer);
+			return 1;
 		}
+		return 0;
+	}
+
+	char oldchar = buffer[pos];
+	int changes_total = 0;
+	for (size_t i = 0; i < 26; ++i) {
+		if (!n->children[i])
+			continue;
+
+		buffer[pos] = i + 'a';
+		if (buffer[pos] != oldchar) {
+			if (changes != max_changes)
+				changes_total += node_autocorrect(
+					n->children[i], buffer, pos + 1, changes + 1, max_changes);
+			continue;
+		}
+
+		changes_total += node_autocorrect(n->children[i], buffer, pos + 1,
+										  changes, max_changes);
+	}
+
+	buffer[pos] = oldchar;
+	return changes_total;
+}
+
+void autocomplete(struct trie *dict, char *prefix, int type)
+{
+	struct node *start = trie_get_prefix(dict, prefix);
+	switch (type) {
+	case 0:
+		print_autocompleted_word(start, prefix, get_first_word);
+		print_autocompleted_word(start, prefix, get_shortest_word);
+		print_autocompleted_word(start, prefix, get_most_frequent_word);
+		break;
+	case 1:
+		print_autocompleted_word(start, prefix, get_first_word);
+		break;
+	case 2:
+		print_autocompleted_word(start, prefix, get_shortest_word);
+		break;
+	case 3:
+		print_autocompleted_word(start, prefix, get_most_frequent_word);
+		break;
+	default:
+		fputs("Error: Invalid command.", stderr);
 	}
 }
 
-void trie_print_all(struct trie *t)
+void autocorrect(struct trie *dict, char *prefix, int max_letters)
 {
-	node_print_all(t->root);
+	if (!node_autocorrect(dict->root, prefix, 0, 0, max_letters))
+		puts("No words found");
 }
