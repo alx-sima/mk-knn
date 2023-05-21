@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "io.h"
+#include "kbd_functions.h"
 #include "trie.h"
 #include "utils.h"
 

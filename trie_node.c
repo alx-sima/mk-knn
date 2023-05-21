@@ -1,9 +1,10 @@
 /* Copyright 2023 Alexandru Sima */
+#include <limits.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "trie_internals.h"
+#include "trie_node.h"
 #include "utils.h"
 
 struct node *node_create(size_t alphabet_size)
@@ -56,7 +57,7 @@ void node_insert(struct node *n, char *word, size_t word_len)
 
 	node_insert(n->children[char_index], word + 1, word_len - 1);
 
-	n->min_word_len = 0xfffffff;
+	n->min_word_len = ULONG_MAX;
 	if (n->words)
 		n->min_word_len = 0;
 	n->max_freq = n->words;
@@ -98,7 +99,7 @@ int node_remove(struct node **n, char *word)
 		}
 	}
 
-	(*n)->min_word_len = 0xfffffff;
+	(*n)->min_word_len = ULONG_MAX;
 	if ((*n)->words)
 		(*n)->min_word_len = 0;
 	(*n)->max_freq = (*n)->words;

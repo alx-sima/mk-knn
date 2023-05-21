@@ -10,6 +10,7 @@ struct bst_node {
 	int *data;
 	struct bst_node *left;
 	struct bst_node *right;
+	int level;
 };
 
 struct bst {
@@ -162,6 +163,52 @@ int points_sort_criterion(const void *a, const void *b)
 	int *point_b = *(int **)b;
 
 	return 0; // TODO
+}
+
+/**
+ * @brief Calculeaza norma euclidiana `|| a - b ||`
+ */
+long sq_distance(int *point_a, int *point_b, size_t dims)
+{
+	long distance = 0;
+
+	for (size_t i = 0; i < dims; ++i) {
+		int diff = point_a[i] - point_b[i];
+		distance += diff * diff;
+	}
+
+	return distance;
+}
+
+void bst_nearest_neighbors(struct bst_node *node, int *coords, int dims,
+						   struct array *found_points)
+{
+	if (!node)
+		return;
+
+	int split_dim = node->level % dims;
+	if (node->data[split_dim] <= coords[split_dim])
+		bst_nearest_neighbors(node->left, coords, dims, found_points);
+	else
+		bst_nearest_neighbors(node->right, coords, dims, found_points);
+
+	
+}
+
+void nearest_neighbor(struct bst *tree, char *args)
+{
+	int *coords = malloc(tree->data_size);
+	DIE(!coords, "failed malloc() of coordinates");
+
+	for (size_t i = 0; i < tree->data_size / sizeof(int); ++i)
+		coords[i] = strtol(args, &args, 0);
+
+	struct array *found_points = array_init();
+	bst_nearest_neighbors(tree->root, coords, tree->data_size / sizeof(int),
+						  found_points);
+
+	array_destroy(found_points);
+	free(coords);
 }
 
 void range_search(struct bst *tree, char *args)

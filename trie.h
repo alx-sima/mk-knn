@@ -60,20 +60,4 @@ void trie_insert(struct trie *t, char *word);
 
 struct node *trie_get_prefix(struct trie *t, char *prefix);
 
-// void get_first_word(struct node *n, char *resultstr);
-// int get_shortest_word(struct node *n, char *resultstr, size_t pos);
-// void get_most_frequent_word(struct node *n, char *resultstr, size_t pos);
-
-/**
- * @relates trie
- * @brief Printeaza datele stocate in `t`.
- *
- * @param t	trie-ul de printat
- */
-void trie_print_all(struct trie *t);
-
-void autocomplete(struct trie *dict, char *prefix, int type);
-
-void autocorrect(struct trie *dict, char *prefix, int max_letters);
-
 #endif /* TRIE_H_ */

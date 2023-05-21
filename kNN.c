@@ -50,6 +50,7 @@ struct bst *knn_load_file(char *filename)
 	return tree;
 }
 
+void nearest_neighbor(struct bst *tree, char *args);
 void range_search(struct bst *tree, char *args);
 
 int main(void)
@@ -67,9 +68,11 @@ int main(void)
 			tree = knn_load_file(args);
 
 		} else if (strcmp(cmd, "NN") == 0) {
+			nearest_neighbor(tree, args);
 
 		} else if (strcmp(cmd, "RS") == 0) {
 			range_search(tree, args);
+
 		} else if (strcmp(cmd, "EXIT") == 0) {
 			break;
 		}

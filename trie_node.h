@@ -1,6 +1,6 @@
 /* Copyright 2023 Alexandru Sima */
-#ifndef TRIE_INTERNALS_H_
-#define TRIE_INTERNALS_H_
+#ifndef TRIE_NODE_H_
+#define TRIE_NODE_H_
 #include <stddef.h>
 
 /**
@@ -31,4 +31,4 @@ void node_insert(struct node *n, char *word, size_t word_len);
 
 int node_remove(struct node **n, char *word);
 
-#endif /* TRIE_INTERNALS_H_ */
+#endif /* TRIE_NODE_H_ */

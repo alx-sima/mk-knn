@@ -8,7 +8,7 @@ TARGETS=kNN mk
 
 build: $(TARGETS)
 
-mk: mk.o trie.o trie_internals.o io.o
+mk: mk.o kbd_functions.o trie.o trie_node.o io.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 kNN: kNN.o bst.o io.o
