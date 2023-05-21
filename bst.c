@@ -7,7 +7,7 @@
 #include "utils.h"
 
 struct bst_node {
-	void *data;
+	int *data;
 	struct bst_node *left;
 	struct bst_node *right;
 };
@@ -89,4 +89,110 @@ void bst_insert(struct bst *tree, void *data)
 			curr = curr->right;
 		}
 	}
+}
+
+int point_in_range(int *point, int *range[2], size_t dimensions)
+{
+	for (size_t i = 0; i < dimensions; ++i) {
+		if (point[i] < range[i][0] || point[i] > range[i][1])
+			return 0;
+	}
+
+	return 1;
+}
+
+struct array {
+	int **data;
+	size_t size;
+	size_t capacity;
+};
+
+struct array *array_init()
+{
+	struct array *a = malloc(sizeof(struct array));
+	DIE(!a, "failed malloc() of array");
+
+	a->size = 0;
+	a->capacity = 1;
+	a->data = malloc(sizeof(int *) * a->capacity);
+	DIE(!a->data, "failed malloc() of array data");
+
+	return a;
+}
+
+void array_push(struct array *a, int *data)
+{
+	if (a->size == a->capacity) {
+		a->data = realloc(a->data, sizeof(int *) * (a->capacity *= 2));
+		DIE(!a->data, "failed realloc() of array data");
+	}
+
+	a->data[a->size++] = data;
+}
+
+void array_destroy(struct array *a)
+{
+	free(a->data);
+	free(a);
+}
+
+void bst_range_search(struct bst_node *node, int *range[2], int level, int dim,
+					  struct array *found_points)
+{
+	if (!node)
+		return;
+
+	/* Dimensiunea dupa care sunt impartite nodurile la nivelul curent */
+	int split_dim = level % dim;
+
+	if (node->data[split_dim] >= range[0][split_dim])
+		bst_range_search(node->left, range, level + 1, dim, found_points);
+
+	if (point_in_range(node->data, range, dim)) {
+		array_push(found_points, node->data);
+	}
+
+	if (node->data[split_dim] <= range[1][split_dim])
+		bst_range_search(node->right, range, level + 1, dim, found_points);
+}
+
+int points_sort_criterion(const void *a, const void *b)
+{
+	int *point_a = *(int **)a;
+	int *point_b = *(int **)b;
+
+	return 0; // TODO
+}
+
+void range_search(struct bst *tree, char *args)
+{
+	const size_t dims = tree->data_size / sizeof(int);
+
+	int *ranges[2] = {
+		malloc(sizeof(int) * dims),
+		malloc(sizeof(int) * dims),
+	};
+	DIE(!ranges[0], "failed malloc() of ranges buffer");
+	DIE(!ranges[1], "failed malloc() of ranges buffer");
+
+	for (size_t i = 0; i < dims; ++i) {
+		ranges[0][i] = strtol(args, &args, 0);
+		ranges[1][i] = strtol(args, &args, 0);
+	}
+
+	struct array *found_points = array_init();
+	bst_range_search(tree->root, ranges, 0, dims, found_points);
+
+	// qsort(found_points->data, found_points->size, sizeof(int *),
+	//	  points_sort_criterion);
+
+	for (size_t i = 0; i < found_points->size; ++i) {
+		for (size_t j = 0; j < dims; ++j)
+			printf("%d ", found_points->data[i][j]);
+		puts("");
+	}
+
+	array_destroy(found_points);
+	free(ranges[0]);
+	free(ranges[1]);
 }

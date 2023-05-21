@@ -50,6 +50,8 @@ struct bst *knn_load_file(char *filename)
 	return tree;
 }
 
+void range_search(struct bst *tree, char *args);
+
 int main(void)
 {
 	char *buffer = NULL;
@@ -64,6 +66,10 @@ int main(void)
 		if (strcmp(cmd, "LOAD") == 0) {
 			tree = knn_load_file(args);
 
+		} else if (strcmp(cmd, "NN") == 0) {
+
+		} else if (strcmp(cmd, "RS") == 0) {
+			range_search(tree, args);
 		} else if (strcmp(cmd, "EXIT") == 0) {
 			break;
 		}
