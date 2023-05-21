@@ -1,6 +1,8 @@
-/* Copyright 2023 Alexandru Sima (312CA) */
+/* Copyright (C) 2023 Alexandru Sima (312CA) */
+
 #ifndef TRIE_H_
 #define TRIE_H_
+
 #include <stddef.h>
 
 struct node;

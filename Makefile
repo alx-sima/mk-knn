@@ -1,4 +1,5 @@
-# Copyright 2023 Alexandru Sima (312CA)
+### Copyright (C) 2023 Alexandru Sima (312CA) ###
+
 # compiler setup
 CC=gcc
 CFLAGS=-Wall -Wextra -Wshadow -Wpedantic -std=c99 -O0 -g

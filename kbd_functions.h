@@ -1,4 +1,4 @@
-/* Copyright 2023 Alexandru Sima */
+/* Copyright (C) 2023 Alexandru Sima (312CA) */
 
 #ifndef KBD_FUNCTIONS_H_
 #define KBD_FUNCTIONS_H_

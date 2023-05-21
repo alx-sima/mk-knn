@@ -1,6 +1,8 @@
-/* Copyright 2023 Alexandru Sima */
+/* Copyright (C) 2023 Alexandru Sima (312CA) */
+
 #ifndef UTILS_H_
 #define UTILS_H_
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>

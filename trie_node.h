@@ -1,6 +1,8 @@
-/* Copyright 2023 Alexandru Sima */
+/* Copyright (C) 2023 Alexandru Sima (312CA) */
+
 #ifndef TRIE_NODE_H_
 #define TRIE_NODE_H_
+
 #include <stddef.h>
 
 /**

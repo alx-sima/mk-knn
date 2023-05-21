@@ -1,4 +1,5 @@
-/* Copyright 2023 Alexandru Sima */
+/* Copyright (C) 2023 Alexandru Sima (312CA) */
+
 #include <limits.h>
 #include <stddef.h>
 #include <stdio.h>

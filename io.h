@@ -1,6 +1,8 @@
-/* Copyright 2023 Alexandru Sima */
+/* Copyright (C) 2023 Alexandru Sima (312CA) */
+
 #ifndef IO_H_
 #define IO_H_
+
 #include <stddef.h>
 #include <stdio.h>
 

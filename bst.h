@@ -1,4 +1,4 @@
-/* Copyright 2023 Alexandru Sima */
+/* Copyright (C) 2023 Alexandru Sima (312CA) */
 
 #ifndef BST_H_
 #define BST_H_
