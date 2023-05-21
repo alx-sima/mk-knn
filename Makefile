@@ -11,7 +11,7 @@ build: $(TARGETS)
 mk: mk.o trie.o trie_internals.o io.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-kNN: kNN.o
+kNN: kNN.o bst.o io.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 %.o: %.c

@@ -8,11 +8,10 @@
 #include "trie.h"
 #include "utils.h"
 
-void load_file(struct trie *dict, char *filename)
+void mk_load_file(struct trie *dict, char *filename)
 {
-	FILE *stream = fopen(filename, "r");
-	if (!stream)
-		DIE(!stream, "Error: Unable to open file");
+	FILE *stream = fopen(filename, "rt");
+	DIE(!stream, "Unable to open input file");
 
 	char *read_buffer = NULL;
 	size_t buf_len = 0;
@@ -44,7 +43,7 @@ int main(void)
 			trie_insert(dict, args);
 
 		} else if (strcmp(cmd, "LOAD") == 0) {
-			load_file(dict, args);
+			mk_load_file(dict, args);
 
 		} else if (strcmp(cmd, "REMOVE") == 0) {
 			trie_remove(dict, args);
