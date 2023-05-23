@@ -19,10 +19,10 @@ void mk_load_file(struct trie *dict, char *filename)
 	size_t buf_len = 0;
 
 	while (read_line(&read_buffer, &buf_len, stream)) {
-		char *word = strtok(read_buffer, " \n");
+		char *word = strtok(read_buffer, " \t\n");
 		while (word) {
 			trie_insert(dict, word);
-			word = strtok(NULL, " \n");
+			word = strtok(NULL, " \t\n");
 		}
 	}
 

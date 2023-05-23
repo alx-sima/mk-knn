@@ -5,8 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "array.h"
 #include "bst.h"
 #include "io.h"
+#include "point.h"
 #include "utils.h"
 
 int node_cmp(void *node1, void *node2, size_t data_size)
@@ -33,17 +35,15 @@ struct bst *knn_load_file(char *filename)
 	int n, k;
 	fscanf(stream, "%d%d", &n, &k);
 
-	const size_t data_size = sizeof(int) * k;
-	struct bst *tree = bst_create(data_size, node_cmp);
+	struct bst *tree = bst_create(k, node_cmp);
 
 	for (int i = 0; i < n; ++i) {
-		int *point_coords = malloc(data_size);
-		DIE(!point_coords, "failed malloc() of point_coords");
+		struct point *p = point_create(k);
 
-		for (int j = 0; j < k; ++j)
-			fscanf(stream, "%d", &point_coords[j]);
-		bst_insert(tree, point_coords);
-		free(point_coords);
+		for (int j = 0; j < k; ++j) {
+			fscanf(stream, "%d", &p->coords[j]);
+		}
+		bst_insert(tree, p);
 	}
 
 	fclose(stream);

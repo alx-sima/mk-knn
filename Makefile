@@ -12,7 +12,7 @@ build: $(TARGETS)
 mk: mk.o kbd_functions.o trie.o trie_node.o io.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-kNN: kNN.o bst.o io.o
+kNN: kNN.o array.o bst.o io.o point.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 %.o: %.c
