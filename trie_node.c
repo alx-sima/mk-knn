@@ -51,7 +51,7 @@ void node_insert(struct node *n, char *word, size_t word_len)
 	}
 
 	size_t char_index = *word - 'a';
-	if (n->children[char_index] == NULL) {
+	if (!n->children[char_index]) {
 		n->children[char_index] = node_create(26);
 		++n->children_no;
 	}

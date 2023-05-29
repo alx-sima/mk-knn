@@ -6,6 +6,6 @@
 #include <stddef.h>
 #include <stdio.h>
 
-size_t read_line(char **str, size_t *size, FILE *stream);
+size_t read_line(char **str, size_t *size, FILE(*stream));
 
 #endif /* IO_H_ */

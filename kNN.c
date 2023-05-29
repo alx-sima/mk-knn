@@ -39,11 +39,12 @@ struct bst *knn_load_file(char *filename)
 
 	for (int i = 0; i < n; ++i) {
 		struct point *p = point_create(k);
-
-		for (int j = 0; j < k; ++j) {
+		for (int j = 0; j < k; ++j)
 			fscanf(stream, "%d", &p->coords[j]);
-		}
+
 		bst_insert(tree, p);
+		// free(p->coords);
+		// free(p);
 	}
 
 	fclose(stream);
@@ -61,21 +62,20 @@ int main(void)
 	struct bst *tree = NULL;
 
 	while (read_line(&buffer, &buffer_size, stdin)) {
-		char *cmd = strtok(buffer, " \n");
+		char *cmd = strtok(buffer, "\n ");
 		char *args = strtok(NULL, "\n");
 
-		if (strcmp(cmd, "LOAD") == 0) {
+		if (strcmp(cmd, "LOAD") == 0)
 			tree = knn_load_file(args);
 
-		} else if (strcmp(cmd, "NN") == 0) {
+		else if (strcmp(cmd, "NN") == 0)
 			nearest_neighbor(tree, args);
 
-		} else if (strcmp(cmd, "RS") == 0) {
+		else if (strcmp(cmd, "RS") == 0)
 			range_search(tree, args);
 
-		} else if (strcmp(cmd, "EXIT") == 0) {
+		else if (strcmp(cmd, "EXIT") == 0)
 			break;
-		}
 	}
 
 	bst_destroy(tree);

@@ -12,4 +12,6 @@ mk
 *.o
 
 # others
+.env
 .gdb_history
+vgcore.*

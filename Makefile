@@ -2,23 +2,25 @@
 
 # compiler setup
 CC=gcc
-CFLAGS=-Wall -Wextra -Wshadow -Wpedantic -std=c99 -O0 -g
+CFLAGS=-Wall -Wextra -Wshadow -Wpedantic -std=c99 -O0 -g -MMD -MP
+
+DEPS=$(wildcard *.d)
 
 # define targets
 TARGETS=kNN mk
 
 build: $(TARGETS)
 
-mk: mk.o kbd_functions.o trie.o trie_node.o io.o
+mk: mk.o mk_functions.o trie.o trie_node.o io.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 kNN: kNN.o array.o bst.o io.o point.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-%.o: %.c
-	$(CC) $(CFLAGS) $^ -o $@ -c -MMD -MP -MF $(@:.o=.d)
+#%.o: %.c
+#	$(CC) $(CFLAGS) $^ -o $@ -c
 
--include $(wilcard *.d)
+-include $(DEPS)
 
 pack:
 	zip -FSr 312CA_AlexandruSima_Tema3.zip README.md Makefile *.c *.h
