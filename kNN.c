@@ -11,20 +11,11 @@
 #include "point.h"
 #include "utils.h"
 
-int node_cmp(void *node1, void *node2, size_t data_size)
+int node_cmp(void *node1, void *node2, size_t dimension)
 {
-	int *a = node1;
-	int *b = node2;
-
-	const size_t dims = data_size / sizeof(int);
-	for (size_t i = 0; i < dims; ++i) {
-		if (a[i] == b[i])
-			continue;
-
-		return a[i] - b[i];
-	}
-
-	return 0;
+	struct point *a = node1;
+	struct point *b = node2;
+	return a->coords[dimension] - b->coords[dimension];
 }
 
 struct bst *knn_load_file(char *filename)
@@ -35,7 +26,7 @@ struct bst *knn_load_file(char *filename)
 	int n, k;
 	fscanf(stream, "%d%d", &n, &k);
 
-	struct bst *tree = bst_create(k, node_cmp);
+	struct bst *tree = bst_create(k, node_cmp, point_destroy);
 
 	for (int i = 0; i < n; ++i) {
 		struct point *p = point_create(k);

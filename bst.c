@@ -10,8 +10,11 @@
 #include "point.h"
 #include "utils.h"
 
+#define CREATE_POINT_ARRAY()                                                   \
+	array_init(sizeof(struct point), point_print, points_sort_criterion)
+
 struct bst_node {
-	struct point *data;
+	void *data;
 
 	struct bst_node *left;
 	struct bst_node *right;
@@ -21,11 +24,13 @@ struct bst_node {
 struct bst {
 	struct bst_node *root;
 	size_t dimensions;
-	int (*node_cmp)(void *node1, void *node2, size_t data_size);
+	int (*node_cmp)(void *node1, void *node2, size_t level);
+	void (*node_destructor)(void *data);
 };
 
 struct bst *bst_create(size_t dimensions,
-					   int (*node_cmp)(void *, void *, size_t))
+					   int (*node_cmp)(void *, void *, size_t),
+					   void (*node_destructor)(void *data))
 {
 	struct bst *tree = malloc(sizeof(struct bst));
 	DIE(!tree, "failed malloc() of tree");
@@ -33,60 +38,70 @@ struct bst *bst_create(size_t dimensions,
 	tree->root = NULL;
 	tree->dimensions = dimensions;
 	tree->node_cmp = node_cmp;
+	tree->node_destructor = node_destructor;
 	return tree;
 }
 
-void bst_node_destroy(struct bst_node *node)
+void bst_node_destroy(struct bst_node *node, void (*destructor)(void *data))
 {
 	if (!node)
 		return;
 
-	bst_node_destroy(node->left);
-	bst_node_destroy(node->right);
+	bst_node_destroy(node->left, destructor);
+	bst_node_destroy(node->right, destructor);
 
-	free(node->data->coords);
-	free(node->data);
+	destructor(node->data);
 	free(node);
 }
 
 void bst_destroy(struct bst *tree)
 {
-	bst_node_destroy(tree->root);
+	bst_node_destroy(tree->root, tree->node_destructor);
 	free(tree);
 }
 
-struct bst_node *bst_node_create(struct point *data, size_t data_size)
+/**
+ * @relates bst_node
+ * @brief Creeaza un nou nod pentru arbore, realizand un shallow copy al
+ * informatiei din `data`.
+ *
+ * @param data	informatia din nod
+ * @return 		nodul proaspat creat
+ */
+struct bst_node *bst_node_create(struct point *data)
 {
 	struct bst_node *node = malloc(sizeof(struct bst_node));
 	DIE(!node, "failed malloc() of tree node");
 
 	node->data = data;
-	// node->data = malloc(data_size);
-	DIE(!node->data, "failed malloc() of tree node data");
-
-	// memcpy(node->data, data, data_size);
 	node->left = NULL;
 	node->right = NULL;
 
 	return node;
 }
 
+/**
+ * @relates bst
+ * @brief Insereaza un nou nod in arbore.
+ *
+ * @param tree arborele in care se insereaza
+ * @param data informatia din noul nod
+ */
 void bst_insert(struct bst *tree, struct point *data)
 {
 	struct bst_node *curr = tree->root;
-	struct bst_node *new_node = bst_node_create(data, sizeof(struct point));
+	struct bst_node *new_node = bst_node_create(data);
 
 	if (!curr) {
 		tree->root = new_node;
 		return;
 	}
 
-	int level = 0;
+	size_t level = 0;
 
 	while (curr) {
-		int split_dim = level % tree->dimensions;
-
-		if (curr->data->coords[split_dim] > data->coords[split_dim]) {
+		size_t split_dim = level % tree->dimensions;
+		if (tree->node_cmp(curr->data, data, split_dim) > 0) {
 			if (!curr->left) {
 				curr->left = new_node;
 				return;
@@ -105,6 +120,16 @@ void bst_insert(struct bst *tree, struct point *data)
 	}
 }
 
+/**
+ * @relates point
+ * @brief Verifica daca un punct se afla in intervalul dat.
+ *
+ * @param p 	punctul
+ * @param range intervalul in care se cauta.
+ * 					range[0] reprezinta capatul inferior,
+ * 					iar range[1] capatul superior
+ * @return		1 daca punctul se afla in interval, 0 altfel
+ */
 int point_in_range(struct point *p, int *range[2])
 {
 	for (size_t i = 0; i < p->dimensions; ++i) {
@@ -115,22 +140,22 @@ int point_in_range(struct point *p, int *range[2])
 	return 1;
 }
 
-void bst_range_search(struct bst_node *node, int *range[2], int level, int dim,
-					  struct array *found_points)
+void bst_range_search(struct bst_node *node, int *range[2], size_t level,
+					  int dim, struct array *found_points)
 {
 	if (!node)
 		return;
 
 	/* Dimensiunea dupa care sunt impartite nodurile la nivelul curent */
-	int split_dim = level % dim;
+	size_t split_dim = level % dim;
 
 	if (point_in_range(node->data, range))
 		array_push(found_points, node->data);
 
-	if (range[0][split_dim] < node->data->coords[split_dim])
+	if (range[0][split_dim] < ((struct point *)node->data)->coords[split_dim])
 		bst_range_search(node->left, range, level + 1, dim, found_points);
 
-	if (node->data->coords[split_dim] <= range[1][split_dim])
+	if (((struct point *)node->data)->coords[split_dim] <= range[1][split_dim])
 		bst_range_search(node->right, range, level + 1, dim, found_points);
 }
 
@@ -164,7 +189,7 @@ int points_sort_criterion(const void *a, const void *b)
  * @param[out]	found_points	punctele la distanta minima de `coords`
  */
 long long bst_nearest_neighbors(struct bst_node *node, struct point *target,
-								int level, struct array *found_points)
+								size_t level, struct array *found_points)
 {
 	if (!node)
 		return LLONG_MAX;
@@ -173,7 +198,7 @@ long long bst_nearest_neighbors(struct bst_node *node, struct point *target,
 	struct bst_node *next_child;
 	struct bst_node *other_child;
 
-	int split_dim = level % target->dimensions;
+	size_t split_dim = level % target->dimensions;
 
 	if (target->coords[split_dim] <= curr_point->coords[split_dim]) {
 		next_child = node->left;
@@ -204,8 +229,7 @@ long long bst_nearest_neighbors(struct bst_node *node, struct point *target,
 	 * distanta minima gasita pana acum, atunci trebuie sa cautam si in
 	 * celalalt subarbore, pentru ca pot exista puncte mai apropiate acolo */
 	if (best_distance >= plane_dist * plane_dist) {
-		struct array *other_points =
-			array_init(sizeof(struct point), point_print);
+		struct array *other_points = CREATE_POINT_ARRAY();
 		long long other_best_distance =
 			bst_nearest_neighbors(other_child, target, level + 1, other_points);
 
@@ -237,12 +261,10 @@ void nearest_neighbor(struct bst *tree, char *args)
 	for (size_t i = 0; i < tree->dimensions; ++i)
 		target->coords[i] = strtol(args, &args, 0);
 
-	struct array *found_points = array_init(sizeof(struct point), point_print);
+	struct array *found_points = CREATE_POINT_ARRAY();
 	(void)bst_nearest_neighbors(tree->root, target, 0, found_points);
 
-	qsort(found_points->data, found_points->size, sizeof(void *),
-		  points_sort_criterion);
-
+	array_sort(found_points);
 	array_print(found_points);
 
 	array_destroy(found_points);
@@ -263,12 +285,10 @@ void range_search(struct bst *tree, char *args)
 		ranges[1][i] = strtol(args, &args, 0);
 	}
 
-	struct array *found_points = array_init(sizeof(struct point), point_print);
+	struct array *found_points = CREATE_POINT_ARRAY();
 	bst_range_search(tree->root, ranges, 0, tree->dimensions, found_points);
 
-	qsort(found_points->data, found_points->size, sizeof(void *),
-		  points_sort_criterion);
-
+	array_sort(found_points);
 	array_print(found_points);
 
 	array_destroy(found_points);

@@ -10,7 +10,8 @@
 struct bst;
 
 struct bst *bst_create(size_t dimensions,
-					   int (*node_cmp)(void *, void *, size_t));
+					   int (*node_cmp)(void *, void *, size_t),
+					   void (*node_destructor)(void *));
 
 void bst_destroy(struct bst *tree);
 

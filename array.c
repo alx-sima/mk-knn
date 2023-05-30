@@ -6,17 +6,18 @@
 #include "array.h"
 #include "utils.h"
 
-struct array *array_init(size_t data_size, void (*print_element)(void *))
+struct array *array_init(size_t data_size, void (*print_element)(void *),
+						 int (*order_func)(const void *, const void *))
 {
 	struct array *a = malloc(sizeof(struct array));
 	DIE(!a, "failed malloc() of array");
 
 	a->size = 0;
 	a->capacity = 1;
-	a->data_size = data_size;
 	a->print_element = print_element;
+	a->order_func = order_func;
 
-	a->data = malloc(a->data_size * a->capacity);
+	a->data = malloc(sizeof(void *) * a->capacity);
 	DIE(!a->data, "failed malloc() of array data");
 
 	return a;
@@ -25,7 +26,7 @@ struct array *array_init(size_t data_size, void (*print_element)(void *))
 void array_push(struct array *a, void *data)
 {
 	if (a->size == a->capacity) {
-		a->data = realloc(a->data, a->data_size * (a->capacity *= 2));
+		a->data = realloc(a->data, sizeof(void *) * (a->capacity *= 2));
 		DIE(!a->data, "failed realloc() of array data");
 	}
 
@@ -36,7 +37,7 @@ void array_clear(struct array *a)
 {
 	a->size = 0;
 	a->capacity = 1;
-	a->data = realloc(a->data, a->data_size * a->capacity);
+	a->data = realloc(a->data, sizeof(void *) * a->capacity);
 	DIE(!a->data, "failed realloc() of array data");
 }
 
@@ -58,4 +59,9 @@ void array_print(struct array *a)
 {
 	for (size_t i = 0; i < a->size; ++i)
 		a->print_element(a->data[i]);
+}
+
+void array_sort(struct array *a)
+{
+	qsort(a->data, a->size, sizeof(void *), a->order_func);
 }
