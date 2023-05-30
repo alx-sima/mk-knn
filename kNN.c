@@ -7,7 +7,6 @@
 
 #include "array.h"
 #include "bst.h"
-#include "io.h"
 #include "kNN_functions.h"
 #include "point.h"
 #include "utils.h"

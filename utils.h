@@ -16,4 +16,6 @@
 		}                                                                      \
 	} while (0)
 
+size_t read_line(char **str, size_t *size, FILE(*stream));
+
 #endif /* UTILS_H_ */

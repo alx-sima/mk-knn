@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "io.h"
 #include "mk_functions.h"
 #include "trie.h"
 #include "utils.h"

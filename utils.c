@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "io.h"
 #include "utils.h"
 
 size_t read_line(char **str, size_t *size, FILE *stream)
