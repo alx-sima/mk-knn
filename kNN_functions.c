@@ -104,7 +104,7 @@ static void bst_range_search(struct bst_node *node, int *range[2], size_t level,
 	size_t split_dim = level % dim;
 
 	if (point_in_range(node->data, range))
-		array_push(found_points, node->data);
+		array_push(found_points, curr_point);
 
 	if (range[0][split_dim] < curr_point->coords[split_dim])
 		bst_range_search(node->left, range, level + 1, dim, found_points);

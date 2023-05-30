@@ -13,9 +13,10 @@
  */
 struct array {
 	/** Vectorul cu elementele stocate */
-	// void **data;
-	struct point **data;
+	void **data;
 
+	/** Dimensiunea unui element */
+	size_t data_size;
 	/** Numarul de elemente stocate */
 	size_t size;
 	/** Capacitatea efectiva de stocare */
@@ -26,16 +27,19 @@ struct array {
 
 	/** Functie de comparare a doua elemente stocate */
 	int (*order_func)(const void *a, const void *b);
+
+	/** Functie de eliberare a unui element stocat */
+	void (*destroy_element)(void *data);
 };
 
 /**
  * @relates array
- * @brief
+ * @brief Initializeaza un vector.
  *
- * @param data_size
- * @param print_element
- * @param order_func
- * @return
+ * @param data_size			dimensiunea unui element
+ * @param print_element		functia de afisare a unui element
+ * @param order_func		functia de comparare a doua elemente
+ * @return 					vectorul creat
  */
 struct array *array_init(size_t data_size, void (*print_element)(void *data),
 						 int (*order_func)(const void *a, const void *b));

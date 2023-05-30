@@ -11,6 +11,7 @@ kNN
 mk
 *.d
 *.o
+*.zip
 
 # others
 .env

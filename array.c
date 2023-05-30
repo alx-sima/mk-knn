@@ -2,6 +2,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "array.h"
 #include "utils.h"
@@ -9,40 +10,50 @@
 struct array *array_init(size_t data_size, void (*print_element)(void *),
 						 int (*order_func)(const void *, const void *))
 {
-	struct array *a = malloc(sizeof(struct array));
-	DIE(!a, "failed malloc() of array");
+	struct array *arr = malloc(sizeof(struct array));
+	DIE(!arr, "failed malloc() of array");
 
-	a->size = 0;
-	a->capacity = 1;
-	a->print_element = print_element;
-	a->order_func = order_func;
+	arr->data_size = data_size;
+	arr->size = 0;
+	arr->capacity = 1;
+	arr->print_element = print_element;
+	arr->order_func = order_func;
 
-	a->data = malloc(sizeof(void *) * a->capacity);
-	DIE(!a->data, "failed malloc() of array data");
+	arr->data = malloc(arr->data_size * arr->capacity);
+	DIE(!arr->data, "failed malloc() of array data");
 
-	return a;
+	return arr;
 }
 
 void array_push(struct array *arr, void *data)
 {
 	if (arr->size == arr->capacity) {
-		arr->data = realloc(arr->data, sizeof(void *) * (arr->capacity *= 2));
+		arr->data = realloc(arr->data, arr->data_size * (arr->capacity *= 2));
 		DIE(!arr->data, "failed realloc() of array data");
 	}
 
-	arr->data[arr->size++] = data;
+	arr->data[arr->size] = malloc(arr->data_size);
+	DIE(!arr->data[arr->size], "failed malloc() of array data");
+
+	memcpy(arr->data[arr->size++], data, arr->data_size);
 }
 
 void array_clear(struct array *arr)
 {
+	for (size_t i = 0; i < arr->size; ++i)
+		free(arr->data[i]);
+
 	arr->size = 0;
 	arr->capacity = 1;
-	arr->data = realloc(arr->data, sizeof(void *) * arr->capacity);
+	arr->data = realloc(arr->data, arr->data_size * arr->capacity);
 	DIE(!arr->data, "failed realloc() of array data");
 }
 
 void array_destroy(struct array *arr)
 {
+	for (size_t i = 0; i < arr->size; ++i)
+		free(arr->data[i]);
+
 	free(arr->data);
 	free(arr);
 }

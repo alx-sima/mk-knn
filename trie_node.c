@@ -115,6 +115,5 @@ int node_remove(struct node **n, char *word)
 			(*n)->max_freq = (*n)->children[i]->max_freq;
 	}
 
-	// TODO
 	return removal_status;
 }
