@@ -8,17 +8,34 @@
 #include "array.h"
 #include "bst.h"
 #include "io.h"
+#include "kNN_functions.h"
 #include "point.h"
 #include "utils.h"
 
-int node_cmp(void *node1, void *node2, size_t dimension)
+/**
+ * @brief Functie de ordine a 2 puncte pentru arbore.
+ *
+ * @param node1 	primul nod
+ * @param node2 	al doilea nod
+ * @param dimension dimensiunea dupa care se compara nodurile
+ * @return 			<0 daca primul nod este mai mic decat al doilea
+ * 					>0 daca primul nod este mai mare decat al doilea
+ * 					 0 daca nodurile sunt egale
+ */
+static int node_cmp(void *node1, void *node2, size_t dimension)
 {
 	struct point *a = node1;
 	struct point *b = node2;
 	return a->coords[dimension] - b->coords[dimension];
 }
 
-struct bst *knn_load_file(char *filename)
+/**
+ * @brief Construieste un arbore binar de cautare cu datele din fisier.
+ * 
+ * @param filename 	fisierul din care se citesc datele
+ * @return 			arborele construit
+ */
+static struct bst *knn_load_file(char *filename)
 {
 	FILE *stream = fopen(filename, "rt");
 	DIE(!stream, "Unable to open input file");
@@ -34,16 +51,11 @@ struct bst *knn_load_file(char *filename)
 			fscanf(stream, "%d", &p->coords[j]);
 
 		bst_insert(tree, p);
-		// free(p->coords);
-		// free(p);
 	}
 
 	fclose(stream);
 	return tree;
 }
-
-void nearest_neighbor(struct bst *tree, char *args);
-void range_search(struct bst *tree, char *args);
 
 int main(void)
 {

@@ -14,13 +14,13 @@ build: $(TARGETS)
 mk: mk.o mk_functions.o trie.o trie_node.o io.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-kNN: kNN.o array.o bst.o io.o point.o
+kNN: kNN.o kNN_functions.o array.o bst.o io.o point.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-#%.o: %.c
-#	$(CC) $(CFLAGS) $^ -o $@ -c
-
 -include $(DEPS)
+
+doc:
+	doxygen
 
 pack:
 	zip -FSr 312CA_AlexandruSima_Tema3.zip README.md Makefile *.c *.h

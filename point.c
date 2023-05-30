@@ -32,14 +32,37 @@ void point_print(void *p)
 	puts("");
 }
 
-long long point_sq_distance(struct point *point_a, struct point *point_b)
+long long point_sq_distance(struct point *a, struct point *b)
 {
 	long long distance = 0;
 
-	for (size_t i = 0; i < point_a->dimensions; ++i) {
-		int diff = point_a->coords[i] - point_b->coords[i];
+	for (size_t i = 0; i < a->dimensions; ++i) {
+		int diff = a->coords[i] - b->coords[i];
 		distance += diff * diff;
 	}
 
 	return distance;
+}
+
+int points_sort_criterion(const void *a, const void *b)
+{
+	struct point *point_a = *(struct point **)a;
+	struct point *point_b = *(struct point **)b;
+
+	for (size_t i = 0; i < point_a->dimensions; ++i) {
+		if (point_a->coords[i] != point_b->coords[i])
+			return point_a->coords[i] - point_b->coords[i];
+	}
+
+	return 0;
+}
+
+int point_in_range(struct point *p, int *range[2])
+{
+	for (size_t i = 0; i < p->dimensions; ++i) {
+		if (p->coords[i] < range[0][i] || p->coords[i] > range[1][i])
+			return 0;
+	}
+
+	return 1;
 }

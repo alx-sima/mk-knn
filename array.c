@@ -23,28 +23,28 @@ struct array *array_init(size_t data_size, void (*print_element)(void *),
 	return a;
 }
 
-void array_push(struct array *a, void *data)
+void array_push(struct array *arr, void *data)
 {
-	if (a->size == a->capacity) {
-		a->data = realloc(a->data, sizeof(void *) * (a->capacity *= 2));
-		DIE(!a->data, "failed realloc() of array data");
+	if (arr->size == arr->capacity) {
+		arr->data = realloc(arr->data, sizeof(void *) * (arr->capacity *= 2));
+		DIE(!arr->data, "failed realloc() of array data");
 	}
 
-	a->data[a->size++] = data;
+	arr->data[arr->size++] = data;
 }
 
-void array_clear(struct array *a)
+void array_clear(struct array *arr)
 {
-	a->size = 0;
-	a->capacity = 1;
-	a->data = realloc(a->data, sizeof(void *) * a->capacity);
-	DIE(!a->data, "failed realloc() of array data");
+	arr->size = 0;
+	arr->capacity = 1;
+	arr->data = realloc(arr->data, sizeof(void *) * arr->capacity);
+	DIE(!arr->data, "failed realloc() of array data");
 }
 
-void array_destroy(struct array *a)
+void array_destroy(struct array *arr)
 {
-	free(a->data);
-	free(a);
+	free(arr->data);
+	free(arr);
 }
 
 void array_concat(struct array *dest, struct array *src)
@@ -55,13 +55,13 @@ void array_concat(struct array *dest, struct array *src)
 	array_destroy(src);
 }
 
-void array_print(struct array *a)
+void array_print(struct array *arr)
 {
-	for (size_t i = 0; i < a->size; ++i)
-		a->print_element(a->data[i]);
+	for (size_t i = 0; i < arr->size; ++i)
+		arr->print_element(arr->data[i]);
 }
 
-void array_sort(struct array *a)
+void array_sort(struct array *arr)
 {
-	qsort(a->data, a->size, sizeof(void *), a->order_func);
+	qsort(arr->data, arr->size, sizeof(void *), arr->order_func);
 }

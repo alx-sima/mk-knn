@@ -6,6 +6,7 @@
 /data.json
 
 # build artifacts
+/doc
 kNN
 mk
 *.d
