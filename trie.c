@@ -11,46 +11,34 @@
 
 struct trie *trie_create(size_t alphabet_size)
 {
-	struct trie *t = malloc(sizeof(struct trie));
-	DIE(!t, "failed malloc() of trie");
+	struct trie *trie = malloc(sizeof(struct trie));
+	DIE(!trie, "failed malloc() of trie");
 
-	t->alphabet_size = alphabet_size;
+	trie->alphabet_size = alphabet_size;
 
-	t->root = node_create(alphabet_size);
+	trie->root = trie_node_create(alphabet_size);
 
-	return t;
+	return trie;
 }
 
-void trie_destroy(struct trie *t)
+void trie_destroy(struct trie *trie)
 {
-	node_destroy(t->root, t->alphabet_size);
-	free(t);
+	trie_node_destroy(trie->root, trie->alphabet_size);
+	free(trie);
 }
 
-void trie_insert(struct trie *t, char *word)
+void trie_insert(struct trie *trie, char *word)
 {
 	size_t len_word = strlen(word);
-	node_insert(t->root, word, len_word);
+	trie_node_insert(trie->root, word, len_word, trie->alphabet_size);
 }
 
-int trie_remove(struct trie *t, char *word)
+int trie_remove(struct trie *trie, char *word)
 {
-	return node_remove(&t->root, word);
+	return trie_node_remove(&trie->root, word, trie->alphabet_size);
 }
 
-struct node *get_prefix(struct node *n, char *prefix)
+struct trie_node *trie_get_prefix(struct trie *trie, char *prefix)
 {
-	if (*prefix == '\0')
-		return n;
-
-	size_t index = *prefix - 'a';
-	if (!n->children[index])
-		return NULL;
-
-	return get_prefix(n->children[index], prefix + 1);
-}
-
-struct node *trie_get_prefix(struct trie *t, char *prefix)
-{
-	return get_prefix(t->root, prefix);
+	return trie_node_get_prefix(trie->root, prefix);
 }

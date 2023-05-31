@@ -6,7 +6,7 @@
 /data.json
 
 # build artifacts
-/doc
+/doc/
 kNN
 mk
 *.d
@@ -14,6 +14,7 @@ mk
 *.zip
 
 # others
+/.idea/
 .env
 .gdb_history
 vgcore.*

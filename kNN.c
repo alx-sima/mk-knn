@@ -7,19 +7,19 @@
 
 #include "array.h"
 #include "bst.h"
-#include "kNN_functions.h"
+#include "kNN_queries.h"
 #include "point.h"
 #include "utils.h"
 
 /**
  * @brief Functie de ordine a 2 puncte pentru arbore.
  *
- * @param node1 	primul nod
- * @param node2 	al doilea nod
+ * @param node1		primul nod
+ * @param node2		al doilea nod
  * @param dimension dimensiunea dupa care se compara nodurile
- * @return 			<0 daca primul nod este mai mic decat al doilea
- * 					>0 daca primul nod este mai mare decat al doilea
- * 					 0 daca nodurile sunt egale
+ * @return			<0 daca primul nod este mai mic decat al doilea
+ *					>0 daca primul nod este mai mare decat al doilea
+ *					 0 daca nodurile sunt egale
  */
 static int node_cmp(void *node1, void *node2, size_t dimension)
 {
@@ -30,9 +30,9 @@ static int node_cmp(void *node1, void *node2, size_t dimension)
 
 /**
  * @brief Construieste un arbore binar de cautare cu datele din fisier.
- * 
- * @param filename 	fisierul din care se citesc datele
- * @return 			arborele construit
+ *
+ * @param filename	fisierul din care se citesc datele
+ * @return			arborele construit
  */
 static struct bst *knn_load_file(char *filename)
 {

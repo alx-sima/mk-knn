@@ -1,7 +1,7 @@
 /* Copyright (C) 2023 Alexandru Sima (312CA) */
 
-#ifndef KNN_FUNCTIONS_H_
-#define KNN_FUNCTIONS_H_
+#ifndef KNN_QUERIES_H_
+#define KNN_QUERIES_H_
 
 #include "bst.h"
 
@@ -23,4 +23,4 @@ void nearest_neighbor(struct bst *tree, char *args);
  */
 void range_search(struct bst *tree, char *args);
 
-#endif /* KNN_FUNCTIONS_H_ */
+#endif /* KNN_QUERIES_H_ */

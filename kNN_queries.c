@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 #include "array.h"
-#include "kNN_functions.h"
+#include "kNN_queries.h"
 #include "point.h"
 
 /** Macro pentru initializarea unui vector de puncte */
@@ -93,7 +93,7 @@ static long long bst_nearest_neighbors(struct bst_node *node,
  * @param found_points	punctele gasite pana in acest moment
  */
 static void bst_range_search(struct bst_node *node, int *range[2], size_t level,
-							 int dim, struct array *found_points)
+							 size_t dim, struct array *found_points)
 {
 	if (!node)
 		return;

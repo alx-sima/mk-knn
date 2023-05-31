@@ -16,6 +16,8 @@ de Alexandru Sima (312CA)
 
 ### Structuri de date folosite
 
+- `trie` - pentru a stoca cuvintele din dicționar și a facilita interogările
+
 ### Comenzi
 
 - `INSERT <word>` - Se inserează un cuvânt în dicționar.
@@ -31,6 +33,53 @@ niciun cuvânt care să înceapă cu `prefix`.
 - `EXIT` - Se golește dicționarul și se termină execuția programului.
 
 ### Funcționalitate
+
+- `INSERT`: Se inserează un cuvânt în dicționar, parcurgându-se literă cu
+literă, creându-se nodurile aferente dacă nu există, iar la nodul final se
+incrementează numărul de apariții ale cuvântului (inițial 0). La întoarcerea din
+inserție, se calculează pentru fiecare nod parcurs frecvența maximă și lungimea
+minimă a cuvintelor care se ramifică din acel nod, pentru a facilita
+interogările ulterioare.
+
+- `LOAD`: Se inserează toate cuvintele dintr-un fișier dat (vezi `INSERT`).
+
+- `REMOVE`: Se șterge un cuvânt din dicționar, parcurgându-se literă cu literă
+și setându-se numărul de apariții ale cuvântului 0. La întoarcere, se
+recalculează frecvența maximă și lungimea minimă a cuvintelor care se ramifică
+din noduri și se șterg nodurile care nu mai conduc către niciun cuvânt.
+
+- `AUTOCORRECT`: Se parcurge arborele până la nivelul corespunzător lungimii
+cuvântului inițial, încercându-se toate combinațiile de litere care conduc la
+cuvinte existente, în limita schimbărilor de litere disponibile. Se contorizează
+numărul de litere schimbate. Când se ajunge la nivelul corespunzător, dacă
+cuvântul curent este valid, se afișează. Modul de încercare a combinațiilor 
+garantează că rezultatele vor fi în ordine lexicografică. În cazul în care 
+niciun cuvânt nu este găsit, se afișează "No words found!".
+
+- `AUTOCOMPLETE`:
+- Se parcurge arborele până la nodul corespunzător prefixului dat. Există 4
+moduri de autocomplete, dintre care `0` semnifică că se vor executa toate
+celelalte 3:
+  - `1`: Se afișează primul cuvânt (în ordine lexicografică). Pentru aceasta, se
+  pleacă din prefix, se încearcă fiecare literă din alfabet și se avansează pe
+  prima găsită (modul de construire a trie-ului garantează că toate literele
+  disponibile duc la cuvinte existente). Se afișează primul cuvânt descoperit.
+  - `2`: Se afișează cel mai scurt cuvânt. Pentru aceasta, se pleacă din prefix,
+  și se urmăresc nodurile care duc la o lungime minimă cu 1 mai mică decât cele
+  curente. Se afișează primul cuvânt descoperit.
+  - `3`: Se afișează cel mai frecvent cuvânt. Pentru aceasta, se pleacă din
+  prefix, se încearcă fiecare literă din alfabet și se urmăresc nodurile care
+  duc la cuvinte cu aceeași frecvență maximă ca și cele curente. Se afișează
+  primul cuvânt descoperit.
+  - Pentru toate cele 3 moduri, dacă nu există niciun cuvânt care să
+  îndeplinească condiția, se afișează "No words found!".
+- Grație similarității modurilor de autocomplete, am implementat o singură
+funcție care primește în plus ca parametri 2 funcții:
+  - O funcție de stop, care spune când se oprește căutarea;
+  - O funcție de avansare, care spune cum se alege nodul următor în parcurgere.
+
+- `EXIT`: Se eliberează elementele stocate în trie și se termină execuția
+programului.
 
 --------------------------------------------------------------------------------
 

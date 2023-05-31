@@ -23,8 +23,8 @@ struct point {
  * @relates point
  * @brief Creeaza un nou punct.
  *
- * @param dimensions 	numarul de dimensiuni ale punctului
- * @return 				punctul creat
+ * @param dimensions	numarul de dimensiuni ale punctului
+ * @return				punctul creat
  */
 struct point *point_create(size_t dimensions);
 
@@ -50,7 +50,7 @@ void point_print(void *p);
  *
  * @param a	punctul a
  * @param b	punctul b
- * @return 	patratul distantei dintre puncte
+ * @return	patratul distantei dintre puncte
  */
 long long point_sq_distance(struct point *a, struct point *b);
 
@@ -60,7 +60,7 @@ long long point_sq_distance(struct point *a, struct point *b);
  *
  * @param a		referinta la primul punct
  * @param b		referinta la punctul al 2-lea
- * @return 		numar care indica relatia de ordine intre a si b (pentru qsort)
+ * @return		numar care indica relatia de ordine intre a si b (pentru qsort)
  */
 int points_sort_criterion(const void *a, const void *b);
 
@@ -68,10 +68,10 @@ int points_sort_criterion(const void *a, const void *b);
  * @relates point
  * @brief Verifica daca un punct se afla in intervalul dat.
  *
- * @param p 	punctul
+ * @param p		punctul
  * @param range intervalul in care se cauta.
- * 					range[0] reprezinta capatul inferior,
- * 					iar range[1] capatul superior
+ *					range[0] reprezinta capatul inferior,
+ *					iar range[1] capatul superior
  * @return		1 daca punctul se afla in interval, 0 altfel
  */
 int point_in_range(struct point *p, int *range[2]);

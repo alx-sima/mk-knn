@@ -17,12 +17,12 @@
  * informatiei din `data`.
  *
  * @param data	informatia din nod
- * @return 		nodul proaspat creat
+ * @return		proaspat creat
  */
 static struct bst_node *bst_node_create(struct point *data)
 {
 	struct bst_node *node = malloc(sizeof(struct bst_node));
-	DIE(!node, "failed malloc() of tree node");
+	DIE(!node, "failed malloc() of tree trie_node");
 
 	node->data = data;
 	node->left = NULL;
@@ -35,9 +35,9 @@ static struct bst_node *bst_node_create(struct point *data)
  * @relates bst_node
  * @brief Sterge recursiv un nod din arbore si descendentii sai.
  *
- * @param node 			nodul curent de sters
- * @param destructor 	functia de eliberare a memoriei pentru informatia
- * 						continuta
+ * @param node			nodul curent de sters
+ * @param destructor	functia de eliberare a memoriei pentru informatia
+ *						continuta
  */
 static void bst_node_destroy(struct bst_node *node,
 							 void (*destructor)(void *data))

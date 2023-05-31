@@ -39,7 +39,7 @@ struct array {
  * @param data_size			dimensiunea unui element
  * @param print_element		functia de afisare a unui element
  * @param order_func		functia de comparare a doua elemente
- * @return 					vectorul creat
+ * @return					vectorul creat
  */
 struct array *array_init(size_t data_size, void (*print_element)(void *data),
 						 int (*order_func)(const void *a, const void *b));
@@ -48,7 +48,7 @@ struct array *array_init(size_t data_size, void (*print_element)(void *data),
  * @relates array
  * @brief Adauga un element la sfarsitul vectorului.
  *
- * @param arr  	vectorul
+ * @param arr	vectorul
  * @param data	elementul de adaugat
  */
 void array_push(struct array *arr, void *data);

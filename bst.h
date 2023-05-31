@@ -41,10 +41,10 @@ struct bst {
  * @relates bst
  * @brief Creaza un arbore binar de cautare multidimensional.
  *
- * @param dimensions 		numarul de dimensiuni ale nodurilor
- * @param node_cmp 			functie de comparatie intre noduri
- * @param node_destructor 	functie de dealocare a nodurilor
- * @return 			 		arborele creat
+ * @param dimensions		numarul de dimensiuni ale nodurilor
+ * @param node_cmp			functie de comparatie intre noduri
+ * @param node_destructor	functie de dealocare a nodurilor
+ * @return					arborele creat
  */
 struct bst *bst_create(size_t dimensions,
 					   int (*node_cmp)(void *, void *, size_t),
