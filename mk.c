@@ -29,10 +29,10 @@ static void mk_load_file(struct trie *dict, char *filename)
 	while (read_line(&read_buffer, &buf_len, stream)) {
 		/* Se separa cuvintele dupa whitespaceuri
 		 * si se insereaza fiecare pe rand */
-		char *word = strtok(read_buffer, " \t\n");
+		char *word = strtok(read_buffer, " \t");
 		while (word) {
 			trie_insert(dict, word);
-			word = strtok(NULL, " \t\n");
+			word = strtok(NULL, " \t");
 		}
 	}
 
@@ -51,33 +51,18 @@ int main(void)
 		char *cmd = strtok(line, "\n ");
 		char *args = strtok(NULL, "\n");
 
-		if (strcmp(cmd, "INSERT") == 0) {
+		if (strcmp(cmd, "INSERT") == 0)
 			trie_insert(dict, args);
-
-		} else if (strcmp(cmd, "LOAD") == 0) {
+		else if (strcmp(cmd, "LOAD") == 0)
 			mk_load_file(dict, args);
-
-		} else if (strcmp(cmd, "REMOVE") == 0) {
+		else if (strcmp(cmd, "REMOVE") == 0)
 			trie_remove(dict, args);
-
-		} else if (strcmp(cmd, "AUTOCORRECT") == 0) {
-			char *prefix = strtok(args, "\n ");
-			char *type = strtok(NULL, "\n");
-			int chars = atoi(type);
-			autocorrect(dict, prefix, chars);
-
-		} else if (strcmp(cmd, "AUTOCOMPLETE") == 0) {
-			char *prefix = strtok(args, "\n ");
-			char *type = strtok(NULL, "\n");
-			int type_no = atoi(type);
-			autocomplete(dict, prefix, type_no);
-
-		} else if (strcmp(cmd, "EXIT") == 0) {
+		else if (strcmp(cmd, "AUTOCORRECT") == 0)
+			autocorrect(dict, args);
+		else if (strcmp(cmd, "AUTOCOMPLETE") == 0)
+			autocomplete(dict, args);
+		else if (strcmp(cmd, "EXIT") == 0)
 			break;
-
-		} else {
-			fputs("Error: Invalid command.", stderr);
-		}
 	}
 
 	trie_destroy(dict);

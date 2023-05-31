@@ -16,6 +16,13 @@
 		}                                                                      \
 	} while (0)
 
+/**
+ * @brief Citeste o linie dintr-un fisier, realocand bufferul daca este necesar.
+ *
+ * @param[in,out] str	bufferul in care se citeste linia
+ * @param[in,out] size	dimensiunea bufferului
+ * @return				numarul de caractere citite
+ */
 size_t read_line(char **str, size_t *size, FILE(*stream));
 
 #endif /* UTILS_H_ */

@@ -201,8 +201,12 @@ static int trie_node_autocorrect(struct trie_node *node, char *word, size_t pos,
 	return changes_total;
 }
 
-void autocomplete(struct trie *dict, char *prefix, int type)
+void autocomplete(struct trie *dict, char *args)
 {
+	char *prefix = strtok(args, " ");
+	char *arg = strtok(NULL, "");
+	int type = strtol(arg, NULL, 0);
+
 	static int (*const stop_conditions[])(struct trie_node *) = {
 		found_word,
 		found_word,
@@ -230,9 +234,12 @@ void autocomplete(struct trie *dict, char *prefix, int type)
 							   advance_conditions[i]);
 }
 
-void autocorrect(struct trie *dict, char *word, int max_letters)
+void autocorrect(struct trie *dict, char *args)
 {
-	if (!trie_node_autocorrect(dict->root, word, 0, 0, max_letters,
+	char *word = strtok(args, " ");
+	char *arg = strtok(NULL, "");
+	int chars = atoi(arg);
+	if (!trie_node_autocorrect(dict->root, word, 0, 0, chars,
 							   dict->alphabet_size))
 		puts("No words found");
 }

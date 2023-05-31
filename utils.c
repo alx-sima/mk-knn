@@ -25,8 +25,10 @@ size_t read_line(char **str, size_t *size, FILE *stream)
 
 		strncpy(*str + line_len, buffer, buffer_siz);
 		line_len += buffer_siz - 1;
-		if ((*str)[line_len - 1] == '\n')
+		if ((*str)[line_len - 1] == '\n') {
+			(*str)[line_len - 1] = '\0';
 			return line_len;
+		}
 	}
 	return 0;
 }

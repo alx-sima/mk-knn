@@ -10,10 +10,9 @@
  * @brief Autocompleteaza prefixul dat.
  *
  * @param dict      dictionarul cu ajutorul caruia se face completarea
- * @param prefix    prefixul care se completeaza
- * @param type      tipul de autocomplete (0-3)
+ * @param args      argumentele comenzii, sub forma de string
  */
-void autocomplete(struct trie *dict, char *prefix, int type);
+void autocomplete(struct trie *dict, char *args);
 
 /**
  * @relates trie
@@ -21,9 +20,8 @@ void autocomplete(struct trie *dict, char *prefix, int type);
  * litere de original.
  *
  * @param dict          dictionarul care contine cuvintele
- * @param word          cuvantul original
- * @param max_letters   numarul maxim de litere care sa difere
+ * @param args          argumentele comenzii, sub forma de string
  */
-void autocorrect(struct trie *dict, char *word, int max_letters);
+void autocorrect(struct trie *dict, char *args);
 
 #endif /* MK_QUERIES_H_ */

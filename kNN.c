@@ -64,8 +64,8 @@ int main(void)
 	struct bst *tree = NULL;
 
 	while (read_line(&buffer, &buffer_size, stdin)) {
-		char *cmd = strtok(buffer, "\n ");
-		char *args = strtok(NULL, "\n");
+		char *cmd = strtok(buffer, " ");
+		char *args = strtok(NULL, "");
 
 		if (strcmp(cmd, "LOAD") == 0)
 			tree = knn_load_file(args);
